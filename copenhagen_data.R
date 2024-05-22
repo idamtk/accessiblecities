@@ -1,6 +1,8 @@
 library(osmdata)
 library(dplyr)
 suburbs <- st_read("cds-spatial/data/bydel.shp", options = "ENCODING=WINDOWS-1252")
+cph <- suburbs %>% st_transform(4326)
+saveRDS(cph,"cph_poly.rds")
 bb  <- suburbs %>% st_transform(4326) %>% st_bbox()
 plot(bb)
 osmboundingbox <- opq(bbox = bb,timeout = 180)
