@@ -6,6 +6,8 @@ library(tidyverse)
 munic <- getData("GADM", country = "DNK", level = 2)
 munic <- as(munic, "sf")
 århus<-munic[31,]
+save_århus <- århus %>% st_transform(4326)
+saveRDS(save_århus, "aarhus_poly.rds")
 bb  <- århus %>% st_transform(4326) %>% st_bbox()
 plot(bb)
 osmboundingbox <- opq(bbox = bb,timeout = 180)
