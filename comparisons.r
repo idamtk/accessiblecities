@@ -1,5 +1,5 @@
 wheels_data_cph <- readr::read_rds("cph_wheels.rds")
-wheels_data_aar <- readr::read_rds
+wheels_data_aar <- readr::read_rds("aarhus_wheels.rds")
 aar_poly <- readr::read_rds("aarhus_poly.rds")
 cph_poly <- readr::read_rds("cph_poly.rds")
 library(tidyverse)
@@ -48,3 +48,24 @@ avg_distance <- function(data){
 }
 avg_distance(wheels_data_cph)
 avg_distance(wheels_data_aar)
+library(dplyr)
+ratio_cal <- function(data){
+  total <- nrow(data)
+  accessible <- data%>%dplyr::filter(wheelchair=="yes")%>%nrow()
+  ratio <- accessible/total*100
+  print(ratio)
+}
+ratio_cal(wheels_data_cph)
+ratio_cal(wheels_data_aar)
+
+
+get_metrics <- function(data,polygon){
+  density <- density_calc(data,polygon)
+  ratio <- ratio_cal(data)
+  mean <- avg_distance(data)
+  results <- data.frame(density=density,
+                        ratio=ratio,
+                        average_distance=mean)
+}
+aar_results<-get_metrics(wheels_data_aar,aar_poly)
+cph_results <- get_metrics(wheels_data_cph,cph_poly)
