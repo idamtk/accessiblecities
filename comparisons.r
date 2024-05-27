@@ -1,3 +1,4 @@
+
 wheels_data_cph <- readr::read_rds("cph_wheels.rds")
 wheels_data_aar <- readr::read_rds("aarhus_wheels.rds")
 aar_poly <- readr::read_rds("aarhus_poly.rds")
@@ -5,6 +6,7 @@ cph_poly <- readr::read_rds("cph_poly.rds")
 library(tidyverse)
 aar<- wheels_data_aar%>%distinct(geometry, .keep_all=TRUE)
 munic <- getData("GADM", country = "DNK", level = 2)
+munic <- readr::read_rds("gadm36_DNK_2_sp.rds")
 munic <- as(munic, "sf")
 cph<-munic[25,]
 cph_poly<- cph %>% st_transform(4326)
