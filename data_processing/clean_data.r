@@ -32,6 +32,8 @@ get_city <- function(polygons,city_name){
   limited <- add_osm_feature(osmboundingbox, key = 'wheelchair',value = "limited")
   # combine into one object
   wheel <- c(osmdata_sf(yes),osmdata_sf(no),osmdata_sf(limited))
+  # I saved the unprocessed object for reproducibility
+  #saveRDS(wheel,paste0(city_name,".rds"))
   # filter out duplicates
   wheel_unique <- unique_osmdata(wheel)
   # keep only the points where both a name and wheelchair tag is available
@@ -54,3 +56,4 @@ get_city <- function(polygons,city_name){
 get_city(municipalities_dk,"Århus")
 # get data for Copenhagen
 get_city(municipalities_dk,"København")
+# make sure file is saved with windows-1252 encoding
