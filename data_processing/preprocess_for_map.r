@@ -14,6 +14,16 @@ add_colors <- function(data){
     ))
 }
 
+# create function that removes info from address column that overlaps with name column
+remove_name_from_address <- function(name, address) {
+  # create a regex pattern from the name
+  pattern <- paste0("\\b", str_replace_all(name, "([\\W])", "\\\\\\1"), "\\b(,\\s*)?")
+  # remove the name from the address
+  str_trim(str_replace(address, pattern, ""))
+  
+}
+
+
 # before we apply the function we geocode the addresses based on coordinates
 library(opencage)
 
@@ -37,8 +47,11 @@ two<- oc_reverse_df(second_part,latitude=lat, longitude=lng, no_annotations = TR
 combined <- rbind(first, second)
 # add colors column
 århus_comb<- add_colors(combined)
+# remove name from address to avoid redundancy on labels
+århus_map<- århus_comb %>%
+  mutate(oc_formatted = mapply(remove_name_from_address, name, oc_formatted))
 # save as rds
-saveRDS(århus_comb,"aarhus_map_data.rds")
+saveRDS(århus_map,"aarhus_map_data.rds")
 #now we do the same with the copenhagen dataset
 # k?benhavn needs to be split into several parts because:
 # 1) the dataset has more than 2500 observations which is the daily limit for geocoding with opencage
@@ -53,5 +66,8 @@ cph_3<- oc_reverse_df(cph_part_3,latitude=lat, longitude=lng, no_annotations = T
 cph_coords<-rbind(cph_1, cph_2, cph_3)
 # add color column
 cph_comb<- add_colors(cph_coords)
+# remove name from address to avoid redundancy on labels
+cph_map<- cph_comb %>%
+  mutate(oc_formatted = mapply(remove_name_from_address, name, oc_formatted))
 # save for later use
-saveRDS(cph_comb,"cph_map_data.rds")
+saveRDS(cph_map,"cph_map_data.rds")
