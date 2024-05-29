@@ -92,20 +92,21 @@ ui <- fluidPage(
            actionButton("ber", "   Berlin   "),
            actionButton("bre", "   Bremen   "),
            actionButton("ham", "   Hamburg   "),
+           actionButton("clear", "   Fjern alle   "),
            ),
            tags$div(style = "height: 20px;"), 
            hr()),
            fluidRow(
              column(4,
-                    p("Average Distance",style="text-align:center;"),
+                    p("Gennemsnitlig afstand",style="text-align:center;"),
                     HTML("<i class='bi bi-arrow-left-right' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
                     plotOutput("distance")
                     ),
-             column(4, p("Ratio",style="text-align:center;"),
+             column(4, p("Andel af tilgængelige steder",style="text-align:center;"),
                     HTML("<i class='bi bi-pie-chart-fill' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
                     plotOutput("ratio")
                     ),
-             column(4, p("Density",style="text-align:center;"),
+             column(4, p("Tilgængelige steder pr. km2",style="text-align:center;"),
                     div(style="text-align:center;",
                     HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
                     HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
@@ -180,41 +181,58 @@ server <- function(input, output, session) {
     }
   })
   
-  selected_data <- reactive({
-    selected_cities <- c()
-    if (input$aar2 > 0) {
-      selected_cities <- c(selected_cities, "Aarhus")
-    }
-    if (input$cph2 > 0) {
-      selected_cities <- c(selected_cities, "København")
-    }
-    if (input$ber > 0) {
-      selected_cities <- c(selected_cities, "Berlin")
-    }
-    if (input$bre > 0) {
-      selected_cities <- c(selected_cities, "Bremen")
-    }
-    if (input$ham > 0) {
-      selected_cities <- c(selected_cities, "Hamburg")
-    }
-    
-    if (length(selected_cities) > 0) {
-      return(dplyr::filter(metrics, X %in% selected_cities))
-    } else {
-      return(NULL)
-    }
+  sel_metrics <- reactiveValues( data=c())
+  observeEvent(input$aar2, {
+    sel_metrics$data <- c(sel_metrics$data, "Aarhus")
+  })
+  observeEvent(input$cph2, {
+    sel_metrics$data <- c(sel_metrics$data, "København")
+  })
+  observeEvent(input$ber, {
+    sel_metrics$data <- c(sel_metrics$data, "Berlin")
+  })
+  observeEvent(input$bre, {
+    sel_metrics$data <- c(sel_metrics$data, "Bremen")
+  })
+  observeEvent(input$ham, {
+    sel_metrics$data <- c(sel_metrics$data, "Hamburg")
+  })
+  observeEvent(input$clear, {
+    sel_metrics$data <- c()
   })
   
+  plot_data<- reactive({ dplyr::filter(metrics, X %in% sel_metrics$data)})
+  
+  
   output$ratio <- renderPlot({
-    if (!is.null(selected_data())) {
-      barplot(selected_data()$ratio, names.arg = selected_data()$X, 
-              ylab = "Value", col = "#009CDE", ylim = c(0, max(metrics$ratio)))
+    
+    
+    if (nrow(plot_data()) > 0) {
+      barplot(plot_data()$ratio, names.arg = plot_data()$X, 
+              ylab = "Procentdel tilgængelige steder", col = "#009CDE", ylim = c(0, max(metrics$ratio)))
     } else {
-      plot(0, type = "n", axes = FALSE, xlab = "", ylab = "")
-      text(0.5, 0.5, "Select a city to view its data", cex = 1.2)
     }
     
   })
+  output$distance <- renderPlot({
+    if (nrow(plot_data()) > 0) {
+      barplot(plot_data()$average_distance, names.arg = plot_data()$X, 
+              ylab = "Afstand til nærmeste tilgængelige sted i meter", col = "#009CDE", ylim = c(0, max(metrics$average_distance)))
+    } else {
+    }
+    
+  })
+  
+  output$density <- renderPlot({
+    if (nrow(plot_data()) > 0) {
+      barplot(plot_data()$density, names.arg = plot_data()$X, 
+              ylab = "Tilgængelige steder pr. km2", col = "#009CDE", ylim = c(0, max(metrics$density)))
+    } else {
+      plot(0, type = "n", axes = FALSE, xlab = "", ylab = "")
+    }
+    
+  })
+  
 }
 shinyApp(ui, server)
 
