@@ -1,8 +1,14 @@
 
-wheels_data_cph <- readr::read_rds("cph_wheels.rds")
-wheels_data_aar <- readr::read_rds("aarhus_wheels.rds")
-aar_poly <- readr::read_rds("aarhus_poly.rds")
-cph_poly <- readr::read_rds("cph_poly.rds")
+wheels_data_cph <- readr::read_rds("../data_processing/København_wheels.rds")
+wheels_data_aar <- readr::read_rds("../data_processing/Århus_wheels.rds")
+wheels_data_ber <- readr::read_rds("../data_processing/Berlin_wheels.rds")
+wheels_data_ham <- readr::read_rds("../data_processing/Hamburg_wheels.rds")
+wheels_data_bre <- readr::read_rds("../data_processing/Bremen_wheels.rds")
+aar_poly <- readr::read_rds("../data_processing/Århus_poly.rds")
+cph_poly <- readr::read_rds("../data_processing/København_poly.rds")
+ber_poly <- readr::read_rds("../data_processing/Berlin_poly.rds")
+ham_poly <- readr::read_rds("../data_processing/Hamburg_poly.rds")
+bre_poly <- readr::read_rds("../data_processing/Bremen_poly.rds")
 library(tidyverse)
 aar<- wheels_data_aar%>%distinct(geometry, .keep_all=TRUE)
 munic <- getData("GADM", country = "DNK", level = 2)
@@ -71,3 +77,15 @@ get_metrics <- function(data,polygon){
 }
 aar_results<-get_metrics(wheels_data_aar,aar_poly)
 cph_results <- get_metrics(wheels_data_cph,cph_poly)
+
+ber_results<-get_metrics(wheels_data_ber,ber_poly)
+
+bre_results<-get_metrics(wheels_data_bre,bre_poly)
+ham_results<-get_metrics(wheels_data_ham,ham_poly)
+rownames(aar_results) <- "Aarhus"
+rownames(cph_results) <- "København"
+rownames(ber_results) <- "Berlin"
+rownames(bre_results) <- "Bremen"
+rownames(ham_results) <- "Hamburg"
+all_results<-rbind(aar_results,ber_results,bre_results,cph_results,ham_results)
+write.csv(all_results,"metrics.csv",fileEncoding = "WINDOWS-1252")

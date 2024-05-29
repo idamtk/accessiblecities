@@ -1,16 +1,16 @@
 library(tidyverse)
 library(sf)
 # read in files
-århus <- readr::read_rds("../data/århus_wheels.rds")
-københavn <- readr::read_rds("../data/København_wheels.rds")
+?rhus <- readr::read_rds("../data/?rhus_wheels.rds")
+k?benhavn <- readr::read_rds("../data/K?benhavn_wheels.rds")
 # create function that adds a colors column which we will use for the markers on the map
 add_colors <- function(data){
   
   data_colored <- data  %>%
     mutate(color = case_when(
-      wheelchair == "yes" ~ "green",
-      wheelchair == "limited" ~ "orange",
-      wheelchair == "no" ~ "red"
+      wheelchair == "yes" ~ "#b3cc31",
+      wheelchair == "limited" ~ "#f0aa20",
+      wheelchair == "no" ~ "#f37131"
     ))
 }
 
@@ -34,11 +34,11 @@ Sys.setenv(OPENCAGE_KEY = "db63550694224928890faabc2417f082")
 # set the key interactively if it is missing.
 oc_config(key=Sys.getenv("db63550694224928890faabc2417f082"))
 
-# the observation in row 255 of århuscauses some trouble if run
+# the observation in row 255 of ?rhuscauses some trouble if run
 # with all other observations but works on its own, so I split the dataset into 
 # two parts
-first_part<-århus[-255,]
-second_part<-århus[255,]
+first_part<-?rhus[-255,]
+second_part<-?rhus[255,]
 
 # get the addresses for all entries based on their coordinates
 first<- oc_reverse_df(first_part,latitude=lat, longitude=lng, no_annotations = TRUE)
@@ -46,21 +46,21 @@ two<- oc_reverse_df(second_part,latitude=lat, longitude=lng, no_annotations = TR
 # combine dataframes with coordinates
 combined <- rbind(first, second)
 # add colors column
-århus_comb<- add_colors(combined)
+?rhus_comb<- add_colors(combined)
 # remove name from address to avoid redundancy on labels
-århus_map<- århus_comb %>%
+?rhus_map<- ?rhus_comb %>%
   mutate(oc_formatted = mapply(remove_name_from_address, name, oc_formatted))
 # save as rds
-saveRDS(århus_map,"aarhus_map_data.rds")
+saveRDS(Ã¥rhus_map,"aarhus_map_data.rds")
 #now we do the same with the copenhagen dataset
 # k?benhavn needs to be split into several parts because:
 # 1) the dataset has more than 2500 observations which is the daily limit for geocoding with opencage
 # 2) because observation 2398 causes some issues if run with the rest of the dataset
-cph_part_1<-københavn[1:2397,] 
+cph_part_1<-k?benhavn[1:2397,] 
 cph_1<- oc_reverse_df(cph_part_1,latitude=lat, longitude=lng, no_annotations = TRUE)
-cph_part_2<- københavn[2398,]
+cph_part_2<- k?benhavn[2398,]
 cph_2<- oc_reverse_df(cph_part_2,latitude=lat, longitude=lng, no_annotations = TRUE)
-cph_part_3<-københavn[2399:2535,]
+cph_part_3<-k?benhavn[2399:2535,]
 cph_3<- oc_reverse_df(cph_part_3,latitude=lat, longitude=lng, no_annotations = TRUE)
 # create one dataframe with all coords
 cph_coords<-rbind(cph_1, cph_2, cph_3)

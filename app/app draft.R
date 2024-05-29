@@ -6,11 +6,13 @@
 #
 #    http://shiny.rstudio.com/
 #
+setwd("~/OneDrive/Skrivebord/Sjette semester/Spatial Analytics/exam/accessibleaarhus/app")
 library(stringr)
 install.packages("htmltools")
 library(htmltools)
 wheels_data_cph <- readr::read_rds("../data_processing/cph_map_data.rds")
 wheels_data_aar <- readr::read_rds("../data_processing/aarhus_map_data.rds")
+metrics<-read.csv("../analysis/metrics.csv",fileEncoding = "WINDOWS-1252")
 wheel <- list(cph=wheels_data_cph,aar=wheels_data_aar)
 cat_aar <- unique(wheels_data_aar$amenity)
 cat_aar <- cat_aar[-1]
@@ -31,25 +33,88 @@ install.packages("shinyalert")
 library(shinyalert)
 
 ui <- fluidPage(
-  theme = bslib::bs_theme(bootswatch = "litera"),
-  navbarPage("Accessible Aarhus", id="nav",
-    tabPanel("Udforsk",
+  theme = bslib::bs_theme(bootswatch = "zephyr"),
+  tags$head(
+    # Include FontAwesome library
+    tags$link(rel = "stylesheet", href = "https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css")
+  ),
+  tags$head(
+    tags$style(HTML("
+      .nav .nav-item .nav-link {
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center; 
+        width: 200px;  /* Adjust the width as needed */
+      }
+    ")),
+    tags$head(
+      tags$style(HTML("
+      .navbar-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: -100px; 
+      }
+    "))
+    ),
+  ),
+  navbarPage("Accessible Cities", id="nav",
+    tabPanel("  Udforsk  ",
+             fluidPage(
+               tags$style(type = "text/css", "#map {height: calc(100vh - 100px) !important;}",),
             fluidRow(
               # Column with map
-              column(8,leafletOutput(outputId = "map")),
-              column(4,
-                     h5("Vælg en by", style = "font-weight: bold;"),
+              column(9,leafletOutput(outputId = "map")),
+              column(3,
+                     h5("Find tilgængelige steder i:", style = "font-weight: bold;"),
                      actionButton("aar", "Århus"),
                      actionButton("cph", "København"), 
+                     tags$div(style = "height: 10px;"), 
+                     p("Du kan finde kørestolstilgængelige steder ved at udforske på kortet eller bruge søgeværktøjerne nedenfor"),
                      hr(),
-                     textInput("place", label = "Indtast sted",
-                               placeholder = "Indtast en addresse eller et navn på et sted"),
-                     actionButton("action", "Søg"),
-                     selectInput("amenity", label = "Kategori", choices = categories),
+                     selectInput("amenity", label = "Find tilgængelige steder i denne kategori", choices = categories),
+                     hr(),
+                     textInput("place", label = "Søg på en addresse og find ud af om stedet er tilgængeligt med kørestol",
+                               placeholder = "Indtast en addresse eller et navn på et sted"), actionButton("action", "Søg"),
+                     
+                     
+                     
+                     
     
-  )),
+  )))),
   tabPanel("Sammenlign", 
-            print("Hvad")))))
+           fluidRow(
+           h5("Vælg byer og sammenlign deres tilgængelighed", style = "font-weight: bold; text-align:center;"),
+           p("Her kan du udforske vores sammenligningsværktøj, der sammenligner byers tilgængelighed på baggrund af tre mål: gennemsnitlig afstand mellem tilgængelige lokationer, antal tilgængelige lokationer pr. km2 og andelen af tilgængelige lokationer.", style="text-align:center;"),
+           div(style = "display: flex; justify-content: center; gap: 10px;",
+           actionButton("aar2", "   Århus   "),
+           actionButton("cph2", "   København   "),
+           actionButton("ber", "   Berlin   "),
+           actionButton("bre", "   Bremen   "),
+           actionButton("ham", "   Hamburg   "),
+           ),
+           tags$div(style = "height: 20px;"), 
+           hr()),
+           fluidRow(
+             column(4,
+                    p("Average Distance",style="text-align:center;"),
+                    HTML("<i class='bi bi-arrow-left-right' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
+                    plotOutput("distance")
+                    ),
+             column(4, p("Ratio",style="text-align:center;"),
+                    HTML("<i class='bi bi-pie-chart-fill' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
+                    plotOutput("ratio")
+                    ),
+             column(4, p("Density",style="text-align:center;"),
+                    div(style="text-align:center;",
+                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
+                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
+                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>")),
+                    plotOutput("density"))
+           ))
+  
+  
+  ))
 
 server <- function(input, output, session) {
   wheels <- reactiveValues(data = wheel[["aar"]])
@@ -113,6 +178,42 @@ server <- function(input, output, session) {
     if (is.null(sel_place)) {
       shinyalert("No data available!", "There are no accessible locations in this category in this city", type = "error")
     }
+  })
+  
+  selected_data <- reactive({
+    selected_cities <- c()
+    if (input$aar2 > 0) {
+      selected_cities <- c(selected_cities, "Aarhus")
+    }
+    if (input$cph2 > 0) {
+      selected_cities <- c(selected_cities, "København")
+    }
+    if (input$ber > 0) {
+      selected_cities <- c(selected_cities, "Berlin")
+    }
+    if (input$bre > 0) {
+      selected_cities <- c(selected_cities, "Bremen")
+    }
+    if (input$ham > 0) {
+      selected_cities <- c(selected_cities, "Hamburg")
+    }
+    
+    if (length(selected_cities) > 0) {
+      return(dplyr::filter(metrics, X %in% selected_cities))
+    } else {
+      return(NULL)
+    }
+  })
+  
+  output$ratio <- renderPlot({
+    if (!is.null(selected_data())) {
+      barplot(selected_data()$ratio, names.arg = selected_data()$X, 
+              ylab = "Value", col = "#009CDE", ylim = c(0, max(metrics$ratio)))
+    } else {
+      plot(0, type = "n", axes = FALSE, xlab = "", ylab = "")
+      text(0.5, 0.5, "Select a city to view its data", cex = 1.2)
+    }
+    
   })
 }
 shinyApp(ui, server)
