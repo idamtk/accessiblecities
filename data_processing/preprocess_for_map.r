@@ -8,9 +8,9 @@ add_colors <- function(data){
   
   data_colored <- data  %>%
     mutate(color = case_when(
-      wheelchair == "yes" ~ "#b3cc31",
-      wheelchair == "limited" ~ "#f0aa20",
-      wheelchair == "no" ~ "#f37131"
+      wheelchair == "yes" ~ "green",
+      wheelchair == "limited" ~ "orange",
+      wheelchair == "no" ~ "purple"
     ))
 }
 
@@ -71,3 +71,4 @@ cph_map<- cph_comb %>%
   mutate(oc_formatted = mapply(remove_name_from_address, name, oc_formatted))
 # save for later use
 saveRDS(cph_map,"cph_map_data.rds")
+

@@ -6,6 +6,12 @@
 #
 #    http://shiny.rstudio.com/
 #
+wheels_data_cph <- wheels_data_cph   %>%
+  mutate(label_da = case_when(
+    wheelchair == "yes" ~ "Tilgængelig",
+    wheelchair == "limited" ~ "Begrænset tilgængelighed",
+    wheelchair == "no" ~ "Utilgænglig"
+  ))
 setwd("~/OneDrive/Skrivebord/Sjette semester/Spatial Analytics/exam/accessibleaarhus/app")
 library(stringr)
 install.packages("htmltools")
@@ -30,6 +36,7 @@ library(leaflet)
 library(sf)
 library(ggplot2)
 install.packages("shinyalert")
+
 library(shinyalert)
 
 ui <- fluidPage(
@@ -155,7 +162,8 @@ server <- function(input, output, session) {
       addTiles() %>% addProviderTiles("CartoDB.Voyager")%>%
       addAwesomeMarkers(data=wheels_data, lat=~lat, lng=~lng,
                  icon=icons, clusterOptions = markerClusterOptions(spiderfyOnMaxZoom=FALSE, disableClusteringAtZoom=17),
-                 popup=~paste("<div style='text-align:center;'><b>",name,"</b> <br>",oc_formatted,"</div>"))
+                 popup=~paste("<div style='text-align:center;'><b>",name,"</b> <br>",oc_formatted,"</div>")) %>%
+      addLegend(colors = unique(wheels_data$color), labels=unique(wheels_data$label_da), title="Kørestolstilgængelighed <br> for lokationen", opacity=1)
     #, popup = ~placename)
   })
   selected_place <- reactive({
