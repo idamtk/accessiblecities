@@ -11,6 +11,8 @@ municipalities_dk <- getData("GADM", country = "DNK", level = 2)
 ## source: https://gadm.org/download_country36.html
 municipalities_dk <- readr::read_rds("../data/gadm36_DNK_2_sp.rds")
 
+aar_c<-readr::read_rds("../data/aarhus_c.rds")
+
 # convert to spatial dataframe
 municipalities_dk <- as(municipalities_dk, "sf")
 
@@ -65,6 +67,10 @@ get_city(municipalities_dk,"Århus")
 # get data for Copenhagen
 get_city(municipalities_dk,"København")
 # make sure file is saved with windows-1252 encoding
+
+aar_points<- readr::read_rds("aarhus_map_data.rds")
+aar_c_points <-st_intersection(aar_points, aar_c %>% st_geometry() %>% st_union())
+saveRDS(aar_c_points,"aar_c_data.rds")
 
 # icreate a function almost identical to the one above, designed for the german data
 # function that fetches the data for a city and cleans it

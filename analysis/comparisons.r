@@ -4,7 +4,9 @@ wheels_data_aar <- readr::read_rds("../data_processing/Århus_wheels.rds")
 wheels_data_ber <- readr::read_rds("../data_processing/Berlin_wheels.rds")
 wheels_data_ham <- readr::read_rds("../data_processing/Hamburg_wheels.rds")
 wheels_data_bre <- readr::read_rds("../data_processing/Bremen_wheels.rds")
+wheels_data_aar_c <- readr::read_rds("../data_processing/aar_c_data.rds")
 aar_poly <- readr::read_rds("../data_processing/Århus_poly.rds")
+aar_c_poly <- readr::read_rds("../data/aarhus_c.rds")
 cph_poly <- readr::read_rds("../data_processing/København_poly.rds")
 ber_poly <- readr::read_rds("../data_processing/Berlin_poly.rds")
 ham_poly <- readr::read_rds("../data_processing/Hamburg_poly.rds")
@@ -76,6 +78,7 @@ get_metrics <- function(data,polygon){
                         average_distance=mean)
 }
 aar_results<-get_metrics(wheels_data_aar,aar_poly)
+aar_c_results<-get_metrics(wheels_data_aar_c,aar_c_poly)
 cph_results <- get_metrics(wheels_data_cph,cph_poly)
 
 ber_results<-get_metrics(wheels_data_ber,ber_poly)
@@ -83,9 +86,10 @@ ber_results<-get_metrics(wheels_data_ber,ber_poly)
 bre_results<-get_metrics(wheels_data_bre,bre_poly)
 ham_results<-get_metrics(wheels_data_ham,ham_poly)
 rownames(aar_results) <- "Aarhus"
+rownames(aar_c_results) <- "Aarhus C"
 rownames(cph_results) <- "København"
 rownames(ber_results) <- "Berlin"
 rownames(bre_results) <- "Bremen"
 rownames(ham_results) <- "Hamburg"
-all_results<-rbind(aar_results,ber_results,bre_results,cph_results,ham_results)
+all_results<-rbind(aar_results,aar_c_results,ber_results,bre_results,cph_results,ham_results)
 write.csv(all_results,"metrics.csv",fileEncoding = "WINDOWS-1252")

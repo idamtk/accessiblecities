@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-wheels_data_cph <- wheels_data_cph   %>%
+wheels_data_cph <- wheels_data_cph  %>%
   mutate(label_da = case_when(
     wheelchair == "yes" ~ "Tilgængelig",
     wheelchair == "limited" ~ "Begrænset tilgængelighed",
@@ -33,6 +33,7 @@ library(mapview)
 library(mapboxapi)
 library(shiny)
 library(leaflet)
+
 library(sf)
 library(ggplot2)
 install.packages("shinyalert")
@@ -95,6 +96,7 @@ ui <- fluidPage(
            p("Her kan du udforske vores sammenligningsværktøj, der sammenligner byers tilgængelighed på baggrund af tre mål: gennemsnitlig afstand mellem tilgængelige lokationer, antal tilgængelige lokationer pr. km2 og andelen af tilgængelige lokationer.", style="text-align:center;"),
            div(style = "display: flex; justify-content: center; gap: 10px;",
            actionButton("aar2", "   Århus   "),
+           actionButton("aar3", "   Århus C   "),
            actionButton("cph2", "   København   "),
            actionButton("ber", "   Berlin   "),
            actionButton("bre", "   Bremen   "),
@@ -193,6 +195,9 @@ server <- function(input, output, session) {
   observeEvent(input$aar2, {
     sel_metrics$data <- c(sel_metrics$data, "Aarhus")
   })
+  observeEvent(input$aar3, {
+    sel_metrics$data <- c(sel_metrics$data, "Aarhus C")
+  })
   observeEvent(input$cph2, {
     sel_metrics$data <- c(sel_metrics$data, "København")
   })
@@ -216,27 +221,47 @@ server <- function(input, output, session) {
     
     
     if (nrow(plot_data()) > 0) {
-      barplot(plot_data()$ratio, names.arg = plot_data()$X, 
-              ylab = "Procentdel tilgængelige steder", col = "#009CDE", ylim = c(0, max(metrics$ratio)))
+      ggplot(data = plot_data(), aes(x = X, y = ratio)) +
+        geom_bar(stat = "identity", fill = "#009CDE") +
+        ylab("Andel tilgængelige steder") +
+        xlab("Område")+
+      ylim(0, max(metrics$ratio)) +
+        theme_minimal()+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))# Optional: Add a minimal theme for better aesthetics
     } else {
+      ggplot() + 
+        theme_void() # Create an empty plot with no axes
     }
     
   })
   output$distance <- renderPlot({
     if (nrow(plot_data()) > 0) {
-      barplot(plot_data()$average_distance, names.arg = plot_data()$X, 
-              ylab = "Afstand til nærmeste tilgængelige sted i meter", col = "#009CDE", ylim = c(0, max(metrics$average_distance)))
+      ggplot(data = plot_data(), aes(x = X, y = average_distance)) +
+        geom_bar(stat = "identity", fill = "#009CDE") +
+        ylab("Gennemsnitlig afstand mellem tilgængelige steder i meter") +
+        xlab("Område") +
+      ylim(0, max(metrics$average_distance)) +
+        theme_minimal()+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))# Optional: Add a minimal theme for better aesthetics
     } else {
+      ggplot() + 
+        theme_void() # Create an empty plot with no axes
     }
     
   })
   
   output$density <- renderPlot({
     if (nrow(plot_data()) > 0) {
-      barplot(plot_data()$density, names.arg = plot_data()$X, 
-              ylab = "Tilgængelige steder pr. km2", col = "#009CDE", ylim = c(0, max(metrics$density)))
+      ggplot(data = plot_data(), aes(x = X, y = density)) +
+        geom_bar(stat = "identity", fill = "#009CDE") +
+        ylab("Tilgængelige steder pr. km2") +
+        xlab("Område") +
+        ylim(0, max(metrics$density)) +
+        theme_minimal()+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))# Optional: Add a minimal theme for better aesthetics
     } else {
-      plot(0, type = "n", axes = FALSE, xlab = "", ylab = "")
+      ggplot() + 
+        theme_void() # Create an empty plot with no axes
     }
     
   })
