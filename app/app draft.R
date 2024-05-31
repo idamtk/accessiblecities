@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+library(tidyverse)
 wheels_data_aar <- wheels_data_aar  %>%
   mutate(cat_da = case_when(
     amenity == "fuel" ~ "Benzintank",
@@ -31,7 +31,7 @@ wheels_data_aar <- wheels_data_aar  %>%
     amenity == "doctors" ~ "Læge"
     ))
 
-wheels_data_cph <- wheels_data_cph  %>%
+wheels_data_cph <- wheels_data_cph %>%
   mutate(label_da = case_when(
     wheelchair == "yes" ~ "Tilgængelig",
     wheelchair == "limited" ~ "Begrænset tilgængelighed",
@@ -157,13 +157,15 @@ ui <- fluidPage(
                                  tags$div(style = "height: 10px;"), 
                                  p("Find kørestolstilgængelige steder ved at udforske på kortet eller brug søgeværktøjerne"),
                                  hr(),
-                                 selectInput("amenity", label = "Find tilgængelige steder i denne kategori", choices = categories),
+                                 p("Find tilgængelige steder i denne kategori", style = "font-weight: bold;"),
+                                 selectInput("amenity", label = NULL, choices = categories),
                                  hr(),
-                                 p("Søg på en addresse og find ud af om stedet er tilgængeligt med kørestol"),
+                                 p("Søg på navnet eller addressen på et sted og find ud af om stedet er tilgængeligt med kørestol",style = "font-weight: bold;"),
                                  div(style = "display: flex; justify-content: center; gap: 10px;",
-                                   textInput("place", label="",
-                                             placeholder = "Indtast en addresse eller et navn på et sted"),
-                                     actionButton("action", "søg")
+                                   textInput("place", label=NULL,
+                                             placeholder = "Skriv her"),
+                                   tags$style(HTML("#action { height: 38px; }")), 
+                                     actionButton("action", "Søg")
                                    )
                                    
                                  
