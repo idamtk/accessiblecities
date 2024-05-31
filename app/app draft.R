@@ -98,6 +98,7 @@ wheel <- list(cph=wheels_data_cph,aar=wheels_data_aar)
 aar_yes<- wheels_data_aar%>% filter(wheelchair=="yes")
 cat_aar <- unique(wheels_data_aar$cat_da)
 cat_aar <- cat_aar[-1]
+cph_yes<- wheels_data_cph%>% filter(wheelchair=="yes")
 cat_cph <- unique(wheels_data_cph$cat_da)
 cat_cph[1] <- "Vælg"
 categories<-union(cat_cph,cat_aar)
@@ -109,7 +110,7 @@ library(mapview)
 library(mapboxapi)
 library(shiny)
 library(leaflet)
-
+library(tidyverse)
 library(sf)
 library(ggplot2)
 install.packages("shinyalert")
@@ -143,64 +144,70 @@ ui <- fluidPage(
     ),
   ),
   navbarPage("Accessible Cities", id="nav",
-    tabPanel("  Udforsk  ",
-             fluidPage(
-               tags$style(type = "text/css", "#map {height: calc(100vh - 100px) !important;}",),
-            fluidRow(
-              # Column with map
-              column(9,leafletOutput(outputId = "map")),
-              column(3,
-                     h5("Find tilgængelige steder i:", style = "font-weight: bold;"),
-                     actionButton("aar", "Århus"),
-                     actionButton("cph", "København"), 
-                     tags$div(style = "height: 10px;"), 
-                     p("Du kan finde kørestolstilgængelige steder ved at udforske på kortet eller bruge søgeværktøjerne nedenfor"),
-                     hr(),
-                     selectInput("amenity", label = "Find tilgængelige steder i denne kategori", choices = categories),
-                     hr(),
-                     textInput("place", label = "Søg på en addresse og find ud af om stedet er tilgængeligt med kørestol",
-                               placeholder = "Indtast en addresse eller et navn på et sted"), actionButton("action", "Søg"),
-                     
-                     
-                     
-                     
-    
-  )))),
-  tabPanel("Sammenlign", 
-           fluidRow(
-           h5("Vælg byer og sammenlign deres tilgængelighed", style = "font-weight: bold; text-align:center;"),
-           p("Her kan du udforske vores sammenligningsværktøj, der sammenligner byers tilgængelighed på baggrund af tre mål: gennemsnitlig afstand mellem tilgængelige lokationer, antal tilgængelige lokationer pr. km2 og andelen af tilgængelige lokationer.", style="text-align:center;"),
-           div(style = "display: flex; justify-content: center; gap: 10px;",
-           actionButton("aar2", "   Århus   "),
-           actionButton("aar3", "   Århus C   "),
-           actionButton("cph2", "   København   "),
-           actionButton("ber", "   Berlin   "),
-           actionButton("bre", "   Bremen   "),
-           actionButton("ham", "   Hamburg   "),
-           actionButton("clear", "   Fjern alle   "),
-           ),
-           tags$div(style = "height: 20px;"), 
-           hr()),
-           fluidRow(
-             column(4,
-                    p("Gennemsnitlig afstand",style="text-align:center;"),
-                    HTML("<i class='bi bi-arrow-left-right' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
-                    plotOutput("distance")
-                    ),
-             column(4, p("Andel af tilgængelige steder",style="text-align:center;"),
-                    HTML("<i class='bi bi-pie-chart-fill' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
-                    plotOutput("ratio")
-                    ),
-             column(4, p("Tilgængelige steder pr. km2",style="text-align:center;"),
-                    div(style="text-align:center;",
-                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
-                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
-                    HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>")),
-                    plotOutput("density"))
-           ))
-  
-  
+             tabPanel("  Udforsk  ",
+                      fluidPage(
+                        tags$style(type = "text/css", "#map {height: calc(100vh - 100px) !important;}",),
+                        fluidRow(
+                          # Column with map
+                          column(9,leafletOutput(outputId = "map")),
+                          column(3,
+                                 h5("Tilgængelige steder i:", style = "font-weight: bold;"),
+                                 actionButton("aar", "Århus"),
+                                 actionButton("cph", "København"), 
+                                 tags$div(style = "height: 10px;"), 
+                                 p("Find kørestolstilgængelige steder ved at udforske på kortet eller brug søgeværktøjerne"),
+                                 hr(),
+                                 selectInput("amenity", label = "Find tilgængelige steder i denne kategori", choices = categories),
+                                 hr(),
+                                 p("Søg på en addresse og find ud af om stedet er tilgængeligt med kørestol"),
+                                 div(style = "display: flex; justify-content: center; gap: 10px;",
+                                   textInput("place", label="",
+                                             placeholder = "Indtast en addresse eller et navn på et sted"),
+                                     actionButton("action", "søg")
+                                   )
+                                   
+                                 
+                                 
+                                 
+                                 
+                                 
+                          )))),
+             tabPanel("Sammenlign", 
+                      fluidRow(
+                        h5("Vælg byer og sammenlign deres tilgængelighed", style = "font-weight: bold; text-align:center;"),
+                        p("Her kan du udforske vores sammenligningsværktøj, der sammenligner byers tilgængelighed på baggrund af tre mål: gennemsnitlig afstand mellem tilgængelige lokationer, antal tilgængelige lokationer pr. km2 og andelen af tilgængelige lokationer.", style="text-align:center;"),
+                        div(style = "display: flex; justify-content: center; gap: 10px;",
+                            actionButton("aar2", "   Århus   "),
+                            actionButton("aar3", "   Århus C   "),
+                            actionButton("cph2", "   København   "),
+                            actionButton("ber", "   Berlin   "),
+                            actionButton("bre", "   Bremen   "),
+                            actionButton("ham", "   Hamburg   "),
+                            actionButton("clear", "   Fjern alle   "),
+                        ),
+                        tags$div(style = "height: 20px;"), 
+                        hr()),
+                      fluidRow(
+                        column(4,
+                               p("Gennemsnitlig afstand",style="text-align:center;"),
+                               HTML("<i class='bi bi-arrow-left-right' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
+                               plotOutput("distance")
+                        ),
+                        column(4, p("Andel af tilgængelige steder",style="text-align:center;"),
+                               HTML("<i class='bi bi-pie-chart-fill' style='font-size: 50px; color: #009CDE; text-align: center; display: block;'></i>"),
+                               plotOutput("ratio")
+                        ),
+                        column(4, p("Tilgængelige steder pr. km2",style="text-align:center;"),
+                               div(style="text-align:center;",
+                                   HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
+                                   HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>"),
+                                   HTML("<i class='bi bi-geo-fill' style='font-size: 50px; color: #009CDE;'></i>")),
+                               plotOutput("density"))
+                      ))
+             
+             
   ))
+
 
 server <- function(input, output, session) {
   wheels <- reactiveValues(data = wheel[["aar"]])
@@ -222,7 +229,7 @@ server <- function(input, output, session) {
         wheels_data <- wheels$data
         wheels_data_filtered <- dplyr::filter(wheels_data, wheelchair=="yes" & cat_da==input$amenity)
         if (nrow(wheels_data_filtered)==0){
-          shinyalert("No data available!", "There are no accessible locations in this category", type = "error")
+          shinyalert("Ingen steder fundet", "Der er ingen tilgængelige steder i denne kategori i denne by", type = "info")
           
         }
         if (nrow(wheels_data_filtered)>0){
@@ -237,33 +244,42 @@ server <- function(input, output, session) {
       markerColor = wheels_data$color,
       )
     leaflet() %>%
-      addTiles() %>% addProviderTiles("CartoDB.Voyager")%>%
+      addTiles(group="Base") %>% addProviderTiles("CartoDB.Voyager",group="Base")%>%
       addAwesomeMarkers(data=wheels_data, lat=~lat, lng=~lng,
-                 icon=icons, clusterOptions = markerClusterOptions(spiderfyOnMaxZoom=FALSE, disableClusteringAtZoom=17),
+                 icon=icons, clusterOptions = markerClusterOptions(spiderfyOnMaxZoom=FALSE, disableClusteringAtZoom=17), group="All_markers",
                  popup=~paste("<div style='text-align:center;'><b>",name,"</b> <br>",oc_formatted,"</div>")) %>%
-      addLegend(colors = unique(wheels_data$color), labels=unique(wheels_data$label_da), title="Kørestolstilgængelighed <br> for lokationen", opacity=1)
+      addLegend(colors = unique(wheels_data$color), labels=unique(wheels_data$label_da), title="Kørestolstilgængelighed <br> for lokationen", opacity=1, group="Base")
     #, popup = ~placename)
   })
-  selected_place <- reactive({
+  selected_place <- eventReactive(input$action, {
     
     req(input$place)  # Ensure input is available
     wheels_data <- wheels$data
-    wheels_data %>% dplyr::filter(name == input$place) ## add address if poss
+    wheels_data %>% dplyr::filter(str_detect(name, regex(input$place, ignore_case = TRUE)) |
+                                    str_detect(oc_formatted, regex(input$place, ignore_case = TRUE))) ## add address if poss
   })
   observe({
     sel_place <- selected_place()
     
     if (nrow(sel_place) ==1) {
       leafletProxy("map") %>%
-        setView(lng = sel_place$lng, lat = sel_place$lat, zoom = 50)
+        setView(lng = sel_place$lng, lat = sel_place$lat, zoom = 70)
     }
     if (nrow(sel_place) > 1) {
-      result <- sel_place[1,]
-      leafletProxy("map") %>%
-        setView(lng = result$lng, lat = result$lat, zoom = 50)
+      iconss <- awesomeIcons(
+        icon = 'fa-solid fa-wheelchair',
+        library = 'fa',
+        markerColor = sel_place$color,
+      )
+        
+      #, popup = ~placename)
+      shinyalert("Flere steder med samme navn","Der er flere steder, med navnet eller adressen, som du indtastede. Vi viser alle stederne, som passer på beskrivelsen.", type="info")
+      leafletProxy("map") %>% clearGroup("Search_markers")%>% hideGroup("All_markers") %>% addAwesomeMarkers(data=sel_place, lat=~lat, lng=~lng,
+                                                                             icon=iconss, group="Search_markers",
+                                                                             popup=~paste("<div style='text-align:center;'><b>",name,"</b> <br>",oc_formatted,"</div>"))
     }
-    if (is.null(sel_place)) {
-      shinyalert("No data available!", "There are no accessible locations in this category in this city", type = "error")
+    if (nrow(sel_place) == 0) {
+      shinyalert("Intet sted fundet", "Der er intet sted med dette navn/addresse i vores database.", type = "info")
     }
   })
   
