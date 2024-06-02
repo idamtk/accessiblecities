@@ -1,13 +1,13 @@
 library(tidyverse)
 library(sf)
 # read in files
-århus <- readr::read_rds("../data/Århus_wheels.rds")
-københavn <- readr::read_rds("../data/København_wheels.rds")
+aarhus <- st_read("../data/points/Århus_wheels.shp")
+copenhagen <- st_read("../data/points/København_wheels.shp")
 # add column with city names
-århus$city <- "Aarhus"
-københavn$city <- "Copenhagen"
+aarhus$city <- "Aarhus"
+copenhagen$city <- "Copenhagen"
 # combine into one dataframe
-all <- rbind(århus,københavn)
+all <- rbind(arhus,copenhagen)
 
 # add column with colors - this will be used for the markers for the map
 all <- all  %>%
@@ -15,6 +15,7 @@ all <- all  %>%
     wheelchair == "yes" ~ "green",
     wheelchair == "limited" ~ "orange",
     wheelchair == "no" ~ "purple"))
+
 
 # using opencage to geocode addresses based on coordinates
 library(opencage)
@@ -74,11 +75,11 @@ combined_da<- combined %>%
   ))
 
 # add labels for data in English
-combined_en<- combined %>%
+combined_en<- combined_en %>%
   mutate(label_en = case_when(
-    wheelchair == "yes" ~ "Accessible",
-    wheelchair == "limited" ~ "Limited Accessibility",
-    wheelchair == "no" ~ "Inaccessible"
+    whelchr == "yes" ~ "Accessible",
+    whelchr == "limited" ~ "Limited Accessibility",
+    whelchr == "no" ~ "Inaccessible"
   ))
 
 # get list of categories where there are accessible places
@@ -162,7 +163,6 @@ combined_da <- combined_da %>%
     amenity == "toilets" ~ "Toiletter",
     amenity == "veterinary" ~ "Dyrlæger",
   ))
-
 # save as shapefiles
-st_write(combined_en, "../app/map_data_en.shp", fileEncoding="WINDOWS-1252")
-st_write(combined_da, "../app/map_data_da.shp", fileEncoding="WINDOWS-1252")
+st_write(combined_en, "map_data_en.shp", fileEncoding="WINDOWS-1252")
+st_write(combined_da, "map_data_da.shp", fileEncoding="WINDOWS-1252")
