@@ -7,7 +7,7 @@ copenhagen <- st_read("../data/points/København_wheels.shp")
 aarhus$city <- "Aarhus"
 copenhagen$city <- "Copenhagen"
 # combine into one dataframe
-all <- rbind(arhus,copenhagen)
+all <- rbind(aarhus,copenhagen)
 
 # add column with colors - this will be used for the markers for the map
 all <- all  %>%
