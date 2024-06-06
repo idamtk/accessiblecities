@@ -11,4 +11,5 @@ The data consists of:
 - Polygon for the 8000 postal code in Denmark (Aarhus C). This data is from Styrelsen for Dataforsyning og Infrastruktur (Agency for Data Supply and Infrastructure) and is licensed under CC BY 4.0. This is saved in the polygon folder.
 
 - This code also loads all points with an OpenStreetMap tag for wheelchair accessibility within the polygons above. © OpenStreetMap contributers. Open Data Commons Open Database License (ODbL) by the OpenStreetMap Foundation (OSMF).
-This data has been loaded on the 27th of May. If this script is rerun at a later data, the data might be slightly different if tags have been added/removed since the 27th of May. TO ensure complete reproducibility, any rerun will receive the ```_rerun``` suffix to ensure it does not overwrite the original data. 
+This data has been loaded on the 27th of May.
+    - If this script is rerun at a later data, the data might be slightly different if tags have been added/removed since the 27th of May. TO ensure complete reproducibility, any rerun will receive the ```_rerun``` suffix to ensure it does not overwrite the original data. 
