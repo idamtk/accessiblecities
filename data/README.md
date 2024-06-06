@@ -6,8 +6,8 @@ The data consists of:
     - German data - Click the link for R (sp), level1
     - Danish data - Click the link for R (sp), level2
       Both files are included in this folder as ```gadm36_DEU_1_sp.rds``` and ```gadm36_DNK_2_sp.rds```
-      GADM's data is "freely available for academic use and other non-commercial use".
-      From this data only the data for Aarhus Kommune, København Kommune as well as the German Bundesländer Bremen, Berlin
+GADM's data is "freely available for academic use and other non-commercial use".
+From this data only the data for Aarhus Kommune, København Kommune as well as the German Bundesländer Bremen, Berlin
       and Hamburg is used for the app. These are saved in the polygons folder.
 - Polygon for the 8000 postal code in Denmark (Aarhus C). This data is from Styrelsen for Dataforsyning og Infrastruktur (Agency for Data Supply and Infrastructure) and is licensed under CC BY 4.0. This is saved in the polygon folder.
 
