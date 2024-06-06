@@ -27,5 +27,6 @@ If you wish to rerun the entire pipeline, follow these steps. All scripts will a
 3. Run ```preprocess_for_map.r```. It is located in the ```data_preprocessing``` folder. This script might need to be run over two days as it relies on OpenCage geocoding, which only allows for 2500 free requests per day. The dataset that is geocoded contains 2922 entries. The script is built to consider this and will save a preliminary file with the first 2500 entries and then add the 422 entries once the following lines are run. However, it can also be run with the first 2500 entries, if one does not have the time to wait until the next day. 
 5. Run ```app_en.r``` or ```app_da.r```
 ## License
+This code is licensed under the MIT license.
 ## Contact
-
+For any questions, please contact ik@cc.au.dk. 
