@@ -90,7 +90,7 @@ cats <- sort(unique(combined_yes$amenity))
 combined_en <- combined_en %>%
   mutate(cat_en = case_when(
     amenity == "bank" ~ "Banks",
-    amenity == "bar" ~ "Bars and Pubs",
+    amenity == "bar" ~ "Bars",
     amenity == "bicycle_rental" ~ "Bicycle Rentals",
     amenity == "bureau_de_change" ~ "Currency Exchanges",
     amenity == "bus_station" ~ "Bus Stations",
@@ -115,7 +115,7 @@ combined_en <- combined_en %>%
     amenity == "pharmacy" ~ "Pharmacies",
     amenity == "police" ~ "Police Stations",
     amenity == "post_office" ~ "Post Offices",
-    amenity == "pub" ~ "Bars and Pubs",
+    amenity == "pub" ~ "Pubs",
     amenity == "recycling" ~ "Recycling Stations",
     amenity == "restaurant" ~ "Restaurants",
     amenity == "school" ~ "Schools",
@@ -154,7 +154,7 @@ combined_da <- combined_da %>%
     amenity == "pharmacy" ~ "Apoteker",
     amenity == "police" ~ "Politistationer",
     amenity == "post_office" ~ "Posthus",
-    amenity == "pub" ~ "Barer",
+    amenity == "pub" ~ "Pubber",
     amenity == "recycling" ~ "Genbrugsstationer",
     amenity == "restaurant" ~ "Restauranter",
     amenity == "school" ~ "Skoler",
@@ -166,3 +166,4 @@ combined_da <- combined_da %>%
 # save as shapefiles
 st_write(combined_en, "map_data_en.shp", fileEncoding="WINDOWS-1252")
 st_write(combined_da, "map_data_da.shp", fileEncoding="WINDOWS-1252")
+

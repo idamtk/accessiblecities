@@ -15,13 +15,16 @@ wheels_data_aar_c <- st_read("../data/points/aar_c_wheels.shp")
 aar_poly <- st_read("../data/polygons/Århus_poly.shp")
 aar_c_poly <- st_read("../data/polygons/aarhus_c_poly.shp")
 cph_poly <- st_read("../data/polygons/København_poly.shp")
-ber_poly <- st_read("../data/polygons/Hamburg_poly.shp")
+ham_poly <- st_read("../data/polygons/Hamburg_poly.shp")
 bre_poly <- st_read("../data/polygons/Bremen_poly.shp")
+ber_poly <- st_read("../data/polygons/Berlin_poly.shp")
+
+st_area(aar_poly)/1e+06
 
 # create function for calculating accessible points pr. km^2 
 density_calc <- function (data,poly){
   # calculate area of polygon and convert to square km
-  area<-st_area(poly)/1*1e+06
+  area<-st_area(poly)/1e+06
   # only select accessible points
   data_yes <- dplyr::filter(data, wheelchair=="yes")
   # get amount of accessible points

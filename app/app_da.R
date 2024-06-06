@@ -60,11 +60,12 @@ ui <- fluidPage(
           # column with search functions
           column(3,
                  # buttons for choosing city
+                 p("Find kørestolstilgængelige steder ved at udforske på kortet eller brug søgeværktøjerne",style = "font-weight: bold;"),
+                 hr(),
                  h5("Tilgængelige steder i:", style = "font-weight: bold;"),
                  actionButton("aar", "Århus"),
                  actionButton("cph", "København"),
                  tags$div(style = "height: 10px;"), 
-                 p("Find kørestolstilgængelige steder ved at udforske på kortet eller brug søgeværktøjerne"),
                  hr(),
                  
                  # dropdown menu for choosing a category

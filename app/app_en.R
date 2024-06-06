@@ -62,20 +62,21 @@ ui <- fluidPage(
           # column with search functions
           column(3,
                  # buttons for choosing city
-                 h5("Accessible places in:", style = "font-weight: bold;"),
+                 p("Find wheelchair accessible places in these cities by using the map and/or the search tools below",style="font-weight:bold;"),
+                 hr(),
+                 p("Show places in:",style="font-weight:bold;"),
                  actionButton("aar", "Aarhus"),
                  actionButton("cph", "Copenhagen"),
                  tags$div(style = "height: 10px;"), 
-                 p("Find wheelchair accessible places in these cities by using the map or the search tools below"),
                  hr(),
                  
                  # dropdown menu for choosing a category
-                 p("Find accessible places in this category", style = "font-weight: bold;"),
+                 p("Find accessible places in this category",style="font-weight:bold;"),
                  selectInput("amenity", label = NULL, choices = cat_all),
                  hr(),
                  
                  # search bar for finding specific places
-                 p("Search for the name or address of a place to see if it is accessible", style = "font-weight: bold;"),
+                 p("Search for the name or address of a place to see if it is accessible",style="font-weight:bold;"),
                  div(style = "display: flex; justify-content: center; gap: 10px;",
                  textInput("place", label = NULL, placeholder = "Write here"),
                  tags$style(HTML("#action { height: 38px; }")),

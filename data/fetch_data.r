@@ -2,7 +2,6 @@
 library(raster)
 library(sf)
 library(osmdata)
-library(mapview)
 library(tidyverse)
 
 # load polygons for muncipalities in DK
@@ -21,7 +20,7 @@ get_kommune <- function(polygons,city_name){
   # set the right CRS
   city_4326 <- city%>% st_transform(4326)
   # save polygon for use in the analysis script.
-  st_write(city_4326, paste0("polygons/",city_name,"_poly.shp"),fileEncoding="WINDOWS-1252")
+  st_write(city_4326, paste0("polygons/",city_name,"_poly_rerun.shp"),fileEncoding="WINDOWS-1252")
   
   # set bounding box for osm features
   bb<- city_4326 %>% st_bbox()
@@ -48,7 +47,7 @@ get_kommune <- function(polygons,city_name){
   wheels$lng<-wheels_unpacked[,1]
   wheels$lat<-wheels_unpacked[,2]
   # save the object for use in the app
-  st_write(wheels, paste0("points/",city_name,"_wheels.shp"),fileEncoding="WINDOWS-1252")
+  st_write(wheels, paste0("points/",city_name,"_wheels_rerun.shp"),fileEncoding="WINDOWS-1252")
 }
 # get data for Aarhus
 get_kommune(municipalities_dk,"Århus")
@@ -71,7 +70,7 @@ get_bundesland <- function(polygons,bl_name){
   # set the right CRS
   bundesland_4326 <- bundesland%>% st_transform(4326)
   # save polygon for use in the analysis script.
-  st_write(bundesland_4326, paste0("polygons/",bl_name,"_poly.shp"))
+  st_write(bundesland_4326, paste0("polygons/",bl_name,"_poly_rerun.shp"))
   
   # set bounding box for osm features
   bb<- bundesland_4326 %>% st_bbox()
@@ -98,7 +97,7 @@ get_bundesland <- function(polygons,bl_name){
   wheels$lng<-wheels_unpacked[,1]
   wheels$lat<-wheels_unpacked[,2]
   # save the object for use in the app
-  st_write(wheels, paste0("points/",bl_name,"_wheels.shp"),fileEncoding="WINDOWS-1252")
+  st_write(wheels, paste0("points/",bl_name,"_wheels_rerun.shp"),fileEncoding="WINDOWS-1252")
 }
 
 # get the data for Bremen, Berlin and Hamburg
@@ -106,20 +105,19 @@ get_bundesland(bundesland_deu,"Bremen")
 get_bundesland(bundesland_deu,"Berlin")
 get_bundesland(bundesland_deu,"Hamburg")
 
+
 # load data for all postal codes in denmark
-url <- "https://api.dataforsyningen.dk/postnumre?format=geojson"
+url <- "https://api.dataforsyningen.dk/postnumre/8000?format=geojson"
 geofile<- tempfile()
 download.file(url,geofile)
-postal_areas<-st_read(geofile)
-# filter for Aarhus C
-aar_c<-postal_areas%>%dplyr::filter(nr==8000)
+aar_c<-st_read(geofile)
 # change CRS
 aar_c_4326 <- aar_c%>% st_transform(4326)
 # save polygon for later use
-st_write(aar_c_4326,"polygons/aarhus_c_poly.shp")
+st_write(aar_c_4326,"polygons/aarhus_c_poly_rerun.shp")
 # read in all the point data from all of Aarhus kommune
-aar_points<- st_read("points/Århus_wheels.shp")
+aar_points<- st_read("points/Århus_wheels_rerun.shp")
 # find only the points within Århus C
 aar_c_points <-st_intersection(aar_points, aar_c_4326 %>% st_geometry() %>% st_union())
 # save file
-st_write(aar_c_points,"points/aar_c_wheels.shp",fileEncoding="WINDOWS-1252")
+st_write(aar_c_points,"points/aar_c_wheels_rerun.shp",fileEncoding="WINDOWS-1252")
