@@ -1,5 +1,6 @@
 # Accessible Cities
 This repository contains the scripts and data used for the Shiny app Accessible Cities. The app is available at this [link](https://accessiblecities.shinyapps.io/deploy/).
+
 This app lets you find locations in Aarhus and Copenhagen which are accessible for wheelchair users. It also contains a tool for comparing the accessibility of Aarhus, Copenhagen, Bremen, Berlin and Hamburg.
 This app was created as part of my exam for Spatial Analytics at AU.
 
